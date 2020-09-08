@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/NoteListFragment">
+
+    <fragment
+        android:id="@+id/NoteListFragment"
+        android:name="com.example.hiltinjectionapp.NoteListFragment"
+        android:label="@string/note_list_fragment_label"
+        tools:layout="@layout/fragment_note_list">
+
+        <action
+            android:id="@+id/action_NoteListFragment_to_NoteDetailFragment"
+            app:destination="@id/NoteDetailFragment" />
+        <action
+            android:id="@+id/action_NoteListFragment_to_addNoteFragment"
+            app:destination="@id/addNoteFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/NoteDetailFragment"
+        android:name="com.example.hiltinjectionapp.DetailsNoteFragment"
+        android:label="@string/note_detail_fragment_label"
+        tools:layout="@layout/fragment_note_detail">
+        <action
+            android:id="@+id/action_NoteDetailFragment_to_NoteListFragment"
+            app:destination="@id/NoteListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addNoteFragment"
+        android:name="com.example.hiltinjectionapp.AddNoteFragment"
+        android:label="add_note_fragment"
+        tools:layout="@layout/add_note_fragment" >
+        <action
+            android:id="@+id/action_addNoteFragment_to_NoteListFragment"
+            app:destination="@id/NoteListFragment" />
+    </fragment>
+</navigation>
