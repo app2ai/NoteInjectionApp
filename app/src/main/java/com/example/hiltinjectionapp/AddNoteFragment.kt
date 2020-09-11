@@ -30,7 +30,7 @@ class AddNoteFragment : Fragment() {
             if (v.editTextTitle.text.isEmpty() || v.editTextDesc.text.isEmpty()){
                 Toast.makeText(context, "Please, fill all fields", Toast.LENGTH_SHORT).show()
             }else{
-                val note = Notes(null, v.editTextTitle.text.toString(), v.editTextDesc.text.toString(), 1, 1, "03-09-2020", "03-09-2020")
+                val note = Notes(null, v.editTextTitle.text.toString(), v.editTextDesc.text.toString(), 1, 1, "", "")
                 if (isInternetConnected(context)){
                     viewModel.addApiNote(note = note).observe(viewLifecycleOwner, Observer {msg->
                         msg.let {

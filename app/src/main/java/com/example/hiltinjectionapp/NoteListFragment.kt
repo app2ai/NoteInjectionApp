@@ -58,6 +58,11 @@ class NoteListFragment : Fragment() {
         })
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        addedList()
+    }
+
     class NoteAdapter(private var list: List<Notes>?) : RecyclerView.Adapter<NoteAdapter.NoteHolder>() {
 
         class NoteHolder(itemView: View) : RecyclerView.ViewHolder(itemView){

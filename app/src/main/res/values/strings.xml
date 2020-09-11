@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HiltInjectionApp</string>
+    <string name="app_name">InjNote App</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="note_list_fragment_label">Note List Fragment</string>
