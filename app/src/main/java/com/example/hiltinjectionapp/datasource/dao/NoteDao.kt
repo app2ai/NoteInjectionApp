@@ -22,4 +22,16 @@ interface NoteDao {
     @WorkerThread
     @Query("SELECT * FROM tblNotes WHERE note_id = :id")
     fun noteById(id: Int):Notes
+
+    @WorkerThread
+    @Query("SELECT COUNT(*) FROM tblNotes")
+    fun totalNotes():Int
+
+    @WorkerThread
+    @Delete
+    fun deleteAll(list: List<Notes>)
+
+    @WorkerThread
+    @Insert
+    fun insertNotes(list: List<Notes>)
 }

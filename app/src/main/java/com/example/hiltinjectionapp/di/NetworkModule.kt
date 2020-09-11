@@ -1,7 +1,7 @@
 package com.example.hiltinjectionapp.di
 
-import com.example.hiltinjectionapp.annotation.BasicAuthInterceptorOkHttpClient
-import com.example.hiltinjectionapp.datasource.interceptor.BasicAuthInterceptor
+//import com.example.hiltinjectionapp.annotation.BasicAuthInterceptorOkHttpClient
+//import com.example.hiltinjectionapp.datasource.interceptor.BasicAuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

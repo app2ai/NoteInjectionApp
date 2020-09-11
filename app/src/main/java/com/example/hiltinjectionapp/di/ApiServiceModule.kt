@@ -1,6 +1,6 @@
 package com.example.hiltinjectionapp.di
 
-import com.example.hiltinjectionapp.annotation.BasicAuthInterceptorOkHttpClient
+//import com.example.hiltinjectionapp.annotation.BasicAuthInterceptorOkHttpClient
 import com.example.hiltinjectionapp.annotation.GsonLenient
 import com.example.hiltinjectionapp.constants.Constants.Companion.BASE_URL
 import com.example.hiltinjectionapp.datasource.rest_api.ApiListener

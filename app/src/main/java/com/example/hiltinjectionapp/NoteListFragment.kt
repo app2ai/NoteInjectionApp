@@ -1,17 +1,21 @@
 package com.example.hiltinjectionapp
 
 import android.os.Bundle
+import android.text.Layout
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.example.hiltinjectionapp.constants.Constants.Companion.SUCCESS_RESPONSE
 import com.example.hiltinjectionapp.model.Notes
 import com.example.hiltinjectionapp.viewmodel.AddNoteViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,11 +25,9 @@ import kotlinx.android.synthetic.main.fragment_note_list.view.*
 @AndroidEntryPoint
 class NoteListFragment : Fragment() {
 
-    private lateinit var listOfNotes:MutableList<Notes>
     private val viewModel: AddNoteViewModel by viewModels()
 
-    override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -36,7 +38,7 @@ class NoteListFragment : Fragment() {
         vr.noteRecycler.apply {
             setHasFixedSize(true)
         }
-        addedList()
+        syncedCall()
         return vr
     }
 
@@ -47,7 +49,16 @@ class NoteListFragment : Fragment() {
         })
     }
 
-    class NoteAdapter(var list: List<Notes>?) : RecyclerView.Adapter<NoteAdapter.NoteHolder>() {
+    private fun syncedCall(){
+        Log.i("FRAGMENT", "Sync call")
+        viewModel.syncNotes().observe(viewLifecycleOwner, Observer {
+            Toast.makeText(context, it.messageText, Toast.LENGTH_SHORT).show()
+            if (it.messageId == SUCCESS_RESPONSE)
+                addedList()
+        })
+    }
+
+    class NoteAdapter(private var list: List<Notes>?) : RecyclerView.Adapter<NoteAdapter.NoteHolder>() {
 
         class NoteHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
             val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)

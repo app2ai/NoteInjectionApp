@@ -4,6 +4,7 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.example.hiltinjectionapp.datasource.Repository
+import com.example.hiltinjectionapp.model.LocalMessages
 import com.example.hiltinjectionapp.model.Notes
 import kotlinx.coroutines.launch
 
@@ -13,7 +14,7 @@ class AddNoteViewModel @ViewModelInject constructor(
 ) : ViewModel() {
 
     private lateinit var addedNoteIndex: MutableLiveData<Long>
-    private lateinit var addedNoteApiValue: MutableLiveData<Int>
+    private lateinit var addedNoteApiValue: MutableLiveData<LocalMessages>
     private lateinit var listOfNotes: MutableLiveData<List<Notes>>
     private lateinit var singleNote: MutableLiveData<Notes>
 
@@ -47,10 +48,20 @@ class AddNoteViewModel @ViewModelInject constructor(
         return singleNote
     }
 
-    fun addApiNote(note: Notes):LiveData<Int>{
+    fun addApiNote(note: Notes):LiveData<LocalMessages>{
         addedNoteApiValue = MutableLiveData()
         viewModelScope.launch {
             noteRepository.addApiNote(notes = note){
+                addedNoteApiValue.value = it
+            }
+        }
+        return addedNoteApiValue
+    }
+
+    fun syncNotes():LiveData<LocalMessages>{
+        addedNoteApiValue = MutableLiveData()
+        viewModelScope.launch {
+            noteRepository.syncApiNotes{
                 addedNoteApiValue.value = it
             }
         }

@@ -11,6 +11,7 @@ class Constants {
         const val NOT_FOUND = 4
         const val UNKNOWN_ERROR = 5
         const val CLIENT_FAILED_ERROR = 6
+        const val UP_TO_DATE = 7
         const val API_LOG_TAG = "API"
 
         const val SUCCESS = "SUCCESS"

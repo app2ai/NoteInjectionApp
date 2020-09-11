@@ -3,6 +3,8 @@ package com.example.hiltinjectionapp.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.sql.Timestamp
+import java.time.Instant
 
 @Entity(tableName = "tblNotes")
 data class Notes(
@@ -17,8 +19,8 @@ data class Notes(
     val createBy: Int,
     @ColumnInfo(name = "updated_by")
     val updatedBy: Int,
-    @ColumnInfo(name = "created_date")
-    val date: String,
-    @ColumnInfo(name = "updated_date")
-    val updateDate: String
+    @ColumnInfo(name = "created_date", defaultValue = "2020-09-20")
+    val date: String?,
+    @ColumnInfo(name = "updated_date",defaultValue = "2020-09-20")
+    val updateDate: String?
 )

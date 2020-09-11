@@ -11,12 +11,16 @@ import com.example.hiltinjectionapp.constants.Constants.Companion.SERVER_ERROR
 import com.example.hiltinjectionapp.constants.Constants.Companion.SUCCESS
 import com.example.hiltinjectionapp.constants.Constants.Companion.SUCCESS_RESPONSE
 import com.example.hiltinjectionapp.constants.Constants.Companion.UNKNOWN_ERROR
+import com.example.hiltinjectionapp.constants.Constants.Companion.UP_TO_DATE
 import com.example.hiltinjectionapp.datasource.dao.NoteDao
 import com.example.hiltinjectionapp.datasource.rest_api.ApiListener
 import com.example.hiltinjectionapp.datasource.service.NoteApiService
 import com.example.hiltinjectionapp.datasource.service.NoteService
+import com.example.hiltinjectionapp.model.LocalMessages
 import com.example.hiltinjectionapp.model.Notes
 import com.example.hiltinjectionapp.model.ServerResponse
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,6 +43,7 @@ class Repository @Inject constructor(
             val list = noteDao.allNotes()
             mainThreadHandler.post{
                 callback(list)
+
             }
         }
     }
@@ -68,14 +73,14 @@ class Repository @Inject constructor(
         }
     }
 
-    override fun addApiNote(notes: Notes, callback: (Int) -> Unit) {
+    override fun addApiNote(notes: Notes, callback: (LocalMessages) -> Unit) {
         executorService.execute {
             apiListener.addNote(note = notes).enqueue(
                 object : Callback<ServerResponse>{
                     override fun onFailure(call: Call<ServerResponse>, t: Throwable) {
                         mainThreadHandler.post{
                             println("API failure: ${t.message}")
-                            callback(CLIENT_FAILED_ERROR)
+                            callback(LocalMessages(CLIENT_FAILED_ERROR, t.message.toString()))
                         }
                     }
 
@@ -86,33 +91,98 @@ class Repository @Inject constructor(
                                 Log.i(API_LOG_TAG, serRes?.message?:"No Response Message")
                                 if (serRes?.status.equals(SUCCESS)){
                                     mainThreadHandler.post{
-                                        callback(SUCCESS_RESPONSE)
+                                        callback(LocalMessages(SUCCESS_RESPONSE, serRes?.message?:"Success"))
                                     }
                                 }else{
                                     mainThreadHandler.post{
-                                        callback(FAILED_RESPONSE)
+                                        callback(LocalMessages(FAILED_RESPONSE, serRes?.message?:"Failed"))
                                     }
                                 }
                             }
                             in 400..445 ->{
                                 mainThreadHandler.post{
-                                    callback(NOT_FOUND)
+                                    callback(LocalMessages(NOT_FOUND, "Not found: ${response.message()}"))
                                 }
                             }
                             in 500..515 ->{
                                 mainThreadHandler.post{
-                                    callback(SERVER_ERROR)
+                                    callback(LocalMessages(SERVER_ERROR, "Server Error: ${response.message()}"))
                                 }
                             }
                             else ->{
                                 mainThreadHandler.post{
-                                    callback(UNKNOWN_ERROR)
+                                    callback(LocalMessages(UNKNOWN_ERROR, "Unknown Error"))
                                 }
                             }
                         }
                     }
                 }
             )
+        }
+    }
+
+    override fun syncApiNotes(callback: (LocalMessages) -> Unit) {
+        executorService.execute {
+            apiListener.syncedNotes(noteDao.totalNotes()).enqueue(
+                object : Callback<ServerResponse>{
+                    override fun onFailure(call: Call<ServerResponse>, t: Throwable) {
+                        Log.i("API", "SYNC ERROR: ${t.message}")
+                        mainThreadHandler.post{
+                            callback(LocalMessages(FAILED_RESPONSE, "RES- ${t.message}"))
+                        }
+                    }
+
+                    override fun onResponse(call: Call<ServerResponse>, response: Response<ServerResponse>){
+                        val serRes = response.body()
+                            when(response.code()){
+                                in 200..210 -> {
+                                    Log.i(API_LOG_TAG, serRes?.message?:"No Response Message")
+                                    if (serRes?.status.equals(SUCCESS)){
+                                        val listType = object :TypeToken<List<Notes?>?>() {}.type
+                                        val l : List<Notes>? = Gson().fromJson(serRes?.response, listType)
+                                        addSyncedNotes(l)
+                                        mainThreadHandler.post{
+                                            if (l?.size == 0){
+                                                callback(LocalMessages(UP_TO_DATE, serRes?.message?:"Success"))
+                                            }else{
+                                                callback(LocalMessages(SUCCESS_RESPONSE, serRes?.message?:"Success"))
+                                            }
+
+                                        }
+                                    }else{
+                                        mainThreadHandler.post{
+                                            callback(LocalMessages(FAILED_RESPONSE, serRes?.message?:"Failed"))
+                                        }
+                                    }
+                                }
+                                in 400..445 ->{
+                                    mainThreadHandler.post{
+                                        callback(LocalMessages(NOT_FOUND, "Not found: ${response.message()}"))
+                                    }
+                                }
+                                in 500..515 ->{
+                                    mainThreadHandler.post{
+                                        callback(LocalMessages(SERVER_ERROR, "Server Error: ${response.message()}"))
+                                    }
+                                }
+                                else ->{
+                                    mainThreadHandler.post{
+                                        callback(LocalMessages(UNKNOWN_ERROR, "Unknown Error"))
+                                    }
+                                }
+                            }
+                    }
+                }
+            )
+        }
+    }
+
+    private fun addSyncedNotes(list: List<Notes>?){
+        if (list!= null){
+            executorService.execute {
+                noteDao.insertNotes(list = list)
+                println("Added values $list")
+            }
         }
     }
 }

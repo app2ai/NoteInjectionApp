@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.example.hiltinjectionapp.constants.Constants.Companion.SUCCESS_RESPONSE
 import com.example.hiltinjectionapp.model.Notes
 import com.example.hiltinjectionapp.utils.isInternetConnected
 import com.example.hiltinjectionapp.viewmodel.AddNoteViewModel
@@ -31,19 +32,27 @@ class AddNoteFragment : Fragment() {
             }else{
                 val note = Notes(null, v.editTextTitle.text.toString(), v.editTextDesc.text.toString(), 1, 1, "03-09-2020", "03-09-2020")
                 if (isInternetConnected(context)){
-                    viewModel.addApiNote(note = note).observe(viewLifecycleOwner, Observer {
-                        // TODO: Change this in future and provide proper information
-                        Toast.makeText(context, "Response value $it", Toast.LENGTH_SHORT).show()
+                    viewModel.addApiNote(note = note).observe(viewLifecycleOwner, Observer {msg->
+                        msg.let {
+                            Toast.makeText(context, msg.messageText, Toast.LENGTH_SHORT).show()
+                            if (it.messageId != SUCCESS_RESPONSE) {
+                                addOffline(note)
+                            }
+                        }
                     })
                 }else{
-                    viewModel.addNote(note = note)
-                        .observe(viewLifecycleOwner, Observer {
-                            // TODO: Change this in future and provide proper information
-                            Toast.makeText(context, "LocalDB Response value $it", Toast.LENGTH_SHORT).show()
-                        })
-                    }
+                    addOffline(note)
                 }
+            }
         }
         return v
+    }
+
+    private fun addOffline(notes: Notes){
+        viewModel.addNote(note = notes)
+            .observe(viewLifecycleOwner, Observer {
+                // TODO: Change this in future and provide proper information
+                Toast.makeText(context, "LocalDB Response value $it", Toast.LENGTH_SHORT).show()
+            })
     }
 }
