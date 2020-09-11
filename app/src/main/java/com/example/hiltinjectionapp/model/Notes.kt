@@ -3,6 +3,7 @@ package com.example.hiltinjectionapp.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.sql.Timestamp
 import java.time.Instant
@@ -20,8 +21,9 @@ data class Notes(
     val createBy: Int,
     @ColumnInfo(name = "updated_by")
     val updatedBy: Int,
-    @ColumnInfo(name = "created_date", defaultValue = "CURRENT_TIMESTAMP")
     @SerializedName("createdDate")
+    @Expose
+    @ColumnInfo(name = "created_date", defaultValue = "CURRENT_TIMESTAMP")
     val date: String?,
     @ColumnInfo(name = "updated_date",defaultValue = "CURRENT_TIMESTAMP")
     val updateDate: String?
