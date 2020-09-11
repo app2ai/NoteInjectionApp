@@ -21,6 +21,7 @@ data class Notes(
     @ColumnInfo(name = "updated_by")
     val updatedBy: Int,
     @ColumnInfo(name = "created_date", defaultValue = "CURRENT_TIMESTAMP")
+    @SerializedName("createdDate")
     val date: String?,
     @ColumnInfo(name = "updated_date",defaultValue = "CURRENT_TIMESTAMP")
     val updateDate: String?

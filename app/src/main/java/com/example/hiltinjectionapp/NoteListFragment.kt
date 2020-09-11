@@ -53,8 +53,7 @@ class NoteListFragment : Fragment() {
         Log.i("FRAGMENT", "Sync call")
         viewModel.syncNotes().observe(viewLifecycleOwner, Observer {
             Toast.makeText(context, it.messageText, Toast.LENGTH_SHORT).show()
-            if (it.messageId == SUCCESS_RESPONSE)
-                addedList()
+            addedList()
         })
     }
 
